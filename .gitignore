@@ -1,1 +1,23 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
 
+# Data and models
+Data/
+data/
+models/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
