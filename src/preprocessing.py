@@ -20,9 +20,7 @@ MEDICATIONS = [
 ]
 
 
-def load_raw(path):
-    """Read the raw CSV. '?' is how this dataset marks missing values.
-    Diagnosis codes are read as text because some start with V or E."""
+def load_raw(path): 
     diag_types = {'diag_1': str, 'diag_2': str, 'diag_3': str}
     return pd.read_csv(path, na_values='?', dtype=diag_types, low_memory=False)
 
@@ -87,9 +85,7 @@ def map_discharge(x):
     return 'Other/Unknown'
 
 
-def clean_data(df, top_n_specialties=10):
-    """Run every cleaning step and return (X, y, groups).
-    groups = patient_nbr, used only for splitting, never as a feature."""
+def clean_data(df, top_n_specialties=10): 
     df = df.copy()
  
     df = df[~df['discharge_disposition_id'].isin(EXPIRED_OR_HOSPICE)]
@@ -98,8 +94,7 @@ def clean_data(df, top_n_specialties=10):
 
     # 3. Drop the ID column, columns with mostly missing data, and two
     #    medications that have the same value for every patient
-    df = df.drop(columns=['encounter_id', 'weight', 'payer_code',
-                          'examide', 'citoglipton'])
+    df = df.drop(columns=['encounter_id', 'weight', 'payer_code', 'examide', 'citoglipton'])
 
     # 4. Fill the remaining missing categories
     df['race'] = df['race'].fillna('Unknown')
