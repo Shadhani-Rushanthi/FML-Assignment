@@ -49,5 +49,3 @@ metformin-pioglitazone,object,2,0.0,No
 change,object,2,0.0,No
 diabetesMed,object,2,0.0,No
 readmitted,object,3,0.0,NO
-targe,int64,2,0.0,0
-target,int64,2,0.0,0
