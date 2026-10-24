@@ -1,11 +1,4 @@
-"""
-Helper functions for the Diabetes 130-US Hospitals readmission project.
-
-All the cleaning logic lives here so every notebook uses exactly the same
-steps, and the notebooks themselves stay short and readable.
-"""
 import re
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
@@ -13,9 +6,7 @@ from sklearn.metrics import (
     f1_score, precision_recall_curve, precision_score, recall_score,
     roc_auc_score,
 )
-
-# Discharge codes meaning the patient died or was sent to hospice.
-# These patients can't be readmitted, so they would only add noise.
+ 
 EXPIRED_OR_HOSPICE = [11, 13, 14, 19, 20, 21]
 
 # The 23 diabetes medication columns in the dataset
@@ -36,8 +27,7 @@ def load_raw(path):
     return pd.read_csv(path, na_values='?', dtype=diag_types, low_memory=False)
 
 
-def group_icd9(code):
-    """Map a raw ICD-9 code to one of the 9 groups used by Strack et al. (2014)."""
+def group_icd9(code): 
     if pd.isna(code):
         return 'Missing'
     code = str(code)
@@ -63,8 +53,7 @@ def group_icd9(code):
     return 'Other'
 
 
-def age_to_midpoint(age_band):
-    """'[70-80)' -> 75.0, so the model sees age as an ordered number."""
+def age_to_midpoint(age_band): 
     low, high = re.findall(r'\d+', age_band)
     return (int(low) + int(high)) / 2
 
@@ -102,11 +91,9 @@ def clean_data(df, top_n_specialties=10):
     """Run every cleaning step and return (X, y, groups).
     groups = patient_nbr, used only for splitting, never as a feature."""
     df = df.copy()
-
-    # 1. Patients who died or went to hospice can't come back
+ 
     df = df[~df['discharge_disposition_id'].isin(EXPIRED_OR_HOSPICE)]
-
-    # 2. A handful of rows have an invalid gender
+ 
     df = df[df['gender'] != 'Unknown/Invalid']
 
     # 3. Drop the ID column, columns with mostly missing data, and two
@@ -157,23 +144,20 @@ def clean_data(df, top_n_specialties=10):
             groups.reset_index(drop=True))
 
 
-def split_columns(X):
-    """Numeric columns get scaled, the rest get one-hot encoded."""
+def split_columns(X): 
     num_cols = X.select_dtypes(include='number').columns.tolist()
     cat_cols = [c for c in X.columns if c not in num_cols]
     return num_cols, cat_cols
 
 
-def best_f1_threshold(y_true, proba):
-    """Find the probability cut-off that gives the best F1 score."""
+def best_f1_threshold(y_true, proba): 
     precision, recall, thresholds = precision_recall_curve(y_true, proba)
     f1 = 2 * precision * recall / (precision + recall + 1e-12)
     best = np.argmax(f1[:-1])     # the last point has no matching threshold
     return thresholds[best], f1[best]
 
 
-def evaluate(y_true, proba, threshold):
-    """All the metrics used in the report, in one place."""
+def evaluate(y_true, proba, threshold): 
     pred = (proba >= threshold).astype(int)
     return {
         'ROC-AUC': roc_auc_score(y_true, proba),
